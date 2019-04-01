@@ -60,6 +60,7 @@ class GameModel:
         self.DrawFruit()
         return self.gameState
         # self.PrintgameState() # debug purpose
+        # there should be a change
 
     def DrawBoard(self):
         self.gameState.clear()
