@@ -2,4 +2,5 @@ x fix 0 length error (cant init with length 1)
 x breakout model out of Game (MVC)
 write test
 setup breakpoint debugger
-sync to Github
+x sync to Github
+x setup test framework
