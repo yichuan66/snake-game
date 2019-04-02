@@ -4,6 +4,9 @@ import sys
 from tkinter import *
 
 class Game:
+    """
+    The game class that controls and monitors the progress of the game
+    """
     def __init__(self, board_dimension=15, init_snake_length=1, delay=50):
         self.tk = Tk()
         self.delay = delay
@@ -13,10 +16,16 @@ class Game:
         self.controller = GameController(tk=self.tk)
 
     def run(self):
+        """
+        Run the game
+        """
         self.update_frame()
         self.tk.mainloop()
 
     def update_frame(self):
+        """
+        Update one frame
+        """
         self.tk.after(self.delay, self.update_frame)
 
         self.model.update_game_state(dir_input=self.controller.get_input())
@@ -28,16 +37,22 @@ class Game:
         self.draw_game_state()
 
     def draw_game_state(self):
+        """
+        Draw the current game state
+        """
         game_state = self.model.get_game_state()
         self.view.draw_game_state(game_state)
 
     def terminate_game(self):
+        """
+        Terminate the game
+        """
         print("YOUR FINAL LENGTH:", self.model.get_snake_length())
         exit()
 
 class GameModel:
     """
-
+    The model that describes the game's internal state
     """
 
     def __init__(self, board_dimension=15, init_snake_length=1):
@@ -47,8 +62,9 @@ class GameModel:
 
     def update_game_state(self, dir_input):
         """
+        Update the game state with direction input
 
-        :param dir_input:
+        :param dir_input: the user specified input (a direction)
         """
         self.snake.set_new_direction(dir_input)
         hit_fruit = (self.snake.next_step() == self.board.get_fruit_location())
@@ -62,8 +78,9 @@ class GameModel:
 
     def get_game_state(self):
         """
+        Return current game state as a 2D list
 
-        :return:
+        :return: Current game state (2D list)
         """
         self.draw_board()
         self.draw_snake()
@@ -72,7 +89,7 @@ class GameModel:
 
     def draw_board(self):
         """
-
+        Draw an empty board
         """
         self.game_state.clear()
         for i in range(0, self.board.get_dimension()):
@@ -83,15 +100,16 @@ class GameModel:
 
     def draw_snake(self):
         """
-
+        Draw snake on the board
         """
         for body_loc in self.snake.body_queue:
             self.game_state[body_loc[0]][body_loc[1]] = 1
 
     def draw_fruit(self):
         """
+        Draw fruit on the board
 
-        :return:
+        :return: No drawing if there is no fruit (-1, -1)
         """
         i, j = self.board.get_fruit_location()
         if (i, j) == (-1, -1):
@@ -100,7 +118,7 @@ class GameModel:
 
     def print_game_state(self):
         """
-
+        Print out current game state to the console (as a 2D list)
         """
         for row in self.game_state:
             for pixel in row:
@@ -109,29 +127,32 @@ class GameModel:
 
     def is_snake_bite_self(self):
         """
+        Return whether the snake bites itself
 
-        :return:
+        :return: whether the snake bitrs itself
         """
         return self.snake.is_bite_self()
 
     def get_board_dimension(self):
         """
+        Return the board dimension
 
-        :return:
+        :return: The board dimension
         """
         return self.board.get_dimension()
 
     def get_snake_length(self):
         """
+        Return the snake's body length
 
-        :return:
+        :return: The snake's body length
         """
         return self.snake.get_body_length()
 
 
 class Board:
     """
-
+    A 2D board for snake game
     """
 
     def __init__(self, dimension):
@@ -140,43 +161,48 @@ class Board:
 
     def get_dimension(self):
         """
+        Return the board dimension
 
-        :return:
+        :return: The board dimension
         """
         return self.dimension
 
     def has_fruit_on_spot(self, location):
         """
+        Check whether there is a fruit at this location
 
-        :param location:
-        :return:
+        :param location: The location to be checked
+        :return: Whether there is a fruit at this location
         """
         return location == self.fruit_location
 
     def get_fruit_location(self):
         """
+        Return the fruit location
 
-        :return:
+        :return: The fruit location
         """
         return self.fruit_location
 
     def set_fruit_eaten(self):
         """
-
+        Set the fruit as eaten
         """
         self.fruit_location = (-1, -1)
 
     def is_fruit_eaten(self):
         """
+        Check if the fruit is eaten
 
-        :return:
+        :return: If the fruit is eaten
         """
         return self.fruit_location == (-1, -1)
 
     def generate_new_fruit(self, snake_body):
         """
+        Generate a new fruit on the board
 
-        :param snake_body:
+        :param snake_body: The snake's body position (to be avoided by fruit generation)
         """
         while self.fruit_location == (-1, -1) or self.fruit_location in snake_body:
             i = randint(0, self.dimension - 1)
@@ -186,7 +212,7 @@ class Board:
 
 class Snake:
     """
-
+    The snake class that describes the body length, location and movement of a snake on 2D board
     """
 
     def __init__(self, init_body_length, board_dimension):
@@ -202,7 +228,7 @@ class Snake:
 
     def initialize_body(self):
         """
-
+        Initialize a body on the board
         """
         for i in range(0, self.init_body_length):
             loc = tuple((i, 0))
@@ -212,9 +238,10 @@ class Snake:
 
     def set_new_direction(self, input_direction):
         """
+        Set new direction of motion.
 
-        :param input_direction:
-        :return:
+        :param input_direction: New direction
+        :return: Do nothing if the new direction is the exact opposite of current direction
         """
         if input_direction not in self.direction_table:
             return
@@ -225,22 +252,25 @@ class Snake:
 
     def get_direction(self):
         """
+        Return current motion direction
 
-        :return:
+        :return: Current motion direction
         """
         return self.direction
 
     def head_location(self):
         """
+        Return the snake's head location
 
-        :return:
+        :return: The snake's head location
         """
         return self.body_queue[0]
 
     def next_step(self):
         """
+        Return snake's next head location if following current direction.
 
-        :return:
+        :return: Snake's next head location if following current direction.
         """
         head = self.body_queue[0]
         return ((head[0] + self.direction_table[self.direction][0]) % self.board_dimension,
@@ -248,8 +278,9 @@ class Snake:
 
     def move(self, hit_fruit):
         """
+        Move one step
 
-        :param hit_fruit:
+        :param hit_fruit: Whether the snake hits a fruit with this motion
         """
         next_step = self.next_step()
 
@@ -265,21 +296,23 @@ class Snake:
 
     def is_bite_self(self):
         """
+        Return if the snake bites itself.
 
-        :return:
+        :return: Whether the snake bites itself.
         """
         return self.bite_self
 
     def get_body_length(self):
         """
+        Return the body length
 
-        :return:
+        :return: The body length
         """
         return len(self.body_queue)
 
 class GameView:
     """
-
+    The game view that converts the game state to visual display
     """
 
     def __init__(self,
@@ -301,11 +334,12 @@ class GameView:
 
     def draw_square(self, loc_i, loc_j, line_width=5, fill='blue'):
         """
+        Draw a square on tk.Canvas()
 
-        :param loc_i:
-        :param loc_j:
-        :param line_width:
-        :param fill:
+        :param loc_i: Square's vertical coordinate
+        :param loc_j: Square's horizontal coordinate
+        :param line_width: Square's edge line width
+        :param fill: Fill color
         """
         side_length = self.square_size
         y1 = loc_i * side_length + line_width
@@ -316,8 +350,9 @@ class GameView:
 
     def draw_game_state(self, game_state):
         """
+        Draw the game state (from model) onto the canvas
 
-        :param game_state:
+        :param game_state: Current game state
         """
         self.canvas.delete("all")
         for i in range(len(game_state)):
@@ -331,7 +366,7 @@ class GameView:
 
 class GameController:
     """
-
+    The game controller that takes user input event and provides the input to view and model
     """
 
     def __init__(self, tk):
@@ -343,8 +378,9 @@ class GameController:
 
     def set_input(self, event):
         """
+        Set user input according to event
 
-        :param event:
+        :param event: User input event (key board hit -- up, down, left, right)
         """
         input_key = event.keysym
         if self.key == self.no_input:
@@ -352,21 +388,22 @@ class GameController:
 
     def get_input(self):
         """
+        Return the first different user input in current after input clear up
 
-        :return:
+        :return: The first different user input in current after input clear up
         """
         return self.key
 
     def clear_input(self):
         """
-
+        Reset user input to no input
         """
         self.key = self.no_input
 
 
 def main():
     """
-
+    Main function
     """
     game = Game()
     game.run()
