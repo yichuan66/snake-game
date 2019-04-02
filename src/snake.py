@@ -3,6 +3,8 @@ from random import randint
 from sys import stdout
 from tkinter import *
 
+
+# noinspection PyMissingOrEmptyDocstring,PyPep8Naming,PyPep8Naming
 class Game:
     def __init__(self, boardDimension = 15, initSnakeLength = 1, delay = 50):
 
@@ -22,7 +24,7 @@ class Game:
 
         self.model.UpdateGameState(dirInput=self.controller.GetInput())
 
-        if(self.model.IsSnakeBiteSelf()):
+        if self.model.IsSnakeBiteSelf():
             self.TerminateGame()
         self.controller.ClearInput()
 
@@ -37,24 +39,37 @@ class Game:
         print("YOUR FINAL LENGTH:", self.model.GetSnakeLength())
         exit()
 
+
+# noinspection PyRedundantParentheses,PyPep8Naming
 class GameModel:
+    """
+
+    """
     def __init__(self, boardDimension = 15, initSnakeLength = 1):
         self.board = Board(boardDimension)
         self.snake = Snake(initSnakeLength, boardDimension)
         self.gameState = list()
 
     def UpdateGameState(self, dirInput):
+        """
+
+        :param dirInput:
+        """
         self.snake.SetNewDirection(dirInput)
         hitFruit = (self.snake.NextStep() == self.board.GetFruitLocation())
         self.snake.Move(hitFruit=hitFruit)
 
-        if(hitFruit):
+        if hitFruit:
             self.board.SetFruitEaten()
 
-        if(self.board.IsFruitEaten()):
+        if self.board.IsFruitEaten():
             self.board.GenerateNewFruit(self.snake.bodyTable)
 
     def GetGameState(self):
+        """
+
+        :return:
+        """
         self.DrawBoard()
         self.DrawSnake()
         self.DrawFruit()
@@ -62,6 +77,9 @@ class GameModel:
         # self.PrintgameState() # debug purpose
 
     def DrawBoard(self):
+        """
+
+        """
         self.gameState.clear()
         for i in range(0, self.board.GetDimension()):
             row = list()
@@ -69,58 +87,111 @@ class GameModel:
                 row.append(0)
             self.gameState.append(row)
 
+    # noinspection PyPep8Naming
     def DrawSnake(self):
+        """
+
+        """
         for bodyLoc in self.snake.bodyQueue:
             self.gameState[bodyLoc[0]][bodyLoc[1]] = 1
 
     def DrawFruit(self):
+        """
+
+        :return:
+        """
         i, j = self.board.GetFruitLocation()
-        if((i, j) == (-1, -1)):
+        if (i, j) == (-1, -1):
             return
         self.gameState[i][j] = 2
 
     def PrintGameState(self):
+        """
+
+        """
         for row in self.gameState:
             for pixel in row:
                 stdout.write(str(pixel) + " ")
             print()
 
     def IsSnakeBiteSelf(self):
+        """
+
+        :return:
+        """
         return self.snake.IsBiteSelf()
 
     def GetBoardDimeision(self):
+        """
+
+        :return:
+        """
         return self.board.GetDimension()
 
     def GetSnakeLength(self):
+        """
+
+        :return:
+        """
         return self.snake.GetBodyLength()
 
 class Board:
+    """
+
+    """
     def __init__(self, dimension):
         self.dimension = dimension
         self.fruitLocation = (-1, -1)
 
     def GetDimension(self):
+        """
+
+        :return:
+        """
         return self.dimension
 
     def HasFruitOnSpot(self, location):
+        """
+
+        :param location:
+        :return:
+        """
         return location == self.fruitLocation
 
     def GetFruitLocation(self):
+        """
+
+        :return:
+        """
         return self.fruitLocation
 
     def SetFruitEaten(self):
+        """
+
+        """
         self.fruitLocation = (-1, -1)
 
     def IsFruitEaten(self):
+        """
+
+        :return:
+        """
         return self.fruitLocation == (-1, -1)
 
     def GenerateNewFruit(self, snakeBody):
-        while(self.fruitLocation == (-1, -1) or self.fruitLocation in snakeBody ):
+        """
+
+        :param snakeBody:
+        """
+        while self.fruitLocation == (-1, -1) or self.fruitLocation in snakeBody:
             i = randint(0, self.dimension - 1)
             j = randint(0, self.dimension - 1)
             self.fruitLocation = (i, j)
 
 class Snake:
+    """
+
+    """
     def __init__(self, initBodyLength, boardDimension):
         self.initBodyLength = initBodyLength
         self.boardDimension = boardDimension
@@ -133,6 +204,9 @@ class Snake:
         self.InitializeBody()
 
     def InitializeBody(self):
+        """
+
+        """
         for i in range(0, self.initBodyLength):
             loc = tuple((i, 0))
             self.bodyQueue.appendleft(loc)
@@ -140,6 +214,11 @@ class Snake:
         print(len(self.bodyQueue))
 
     def SetNewDirection(self, dir):
+        """
+
+        :param dir:
+        :return:
+        """
         if dir not in self.directionTable:
             return
         if (self.directionTable[dir][0] + self.directionTable[self.direction][0],
@@ -148,21 +227,36 @@ class Snake:
         self.direction = dir
 
     def GetDirection(self):
+        """
+
+        :return:
+        """
         return self.direction
 
     def HeadLocation(self):
+        """
+
+        :return:
+        """
         return self.body[0]
 
     def NextStep(self):
+        """
+
+        :return:
+        """
         head = self.bodyQueue[0]
         return ((head[0] + self.directionTable[self.direction][0]) % self.boardDimension,
                 (head[1] + self.directionTable[self.direction][1]) % self.boardDimension)
 
     def Move(self, hitFruit):
+        """
 
+        :param hitFruit:
+        """
         nextStep = self.NextStep()
 
-        if(not hitFruit):
+        if not hitFruit:
             tail = self.bodyQueue.pop()
             self.bodyTable.remove(tail)
 
@@ -174,12 +268,23 @@ class Snake:
         self.bodyTable.add(nextStep)
 
     def IsBiteSelf(self):
+        """
+
+        :return:
+        """
         return self.biteSelf
 
     def GetBodyLength(self):
+        """
+
+        :return:
+        """
         return len(self.bodyQueue)
 
 class GameView:
+    """
+
+    """
     def __init__(self, tk, boardDimension=15, bg='white', squareSize=20, snakeBodyColor = 'yellow', fruitColor = 'red'):
         self.tk = tk
         self.width= squareSize * boardDimension
@@ -192,6 +297,13 @@ class GameView:
         self.fruitColor = fruitColor
 
     def DrawSquare(self, loc_i, loc_j, lineWidth=5, fill = 'blue'):
+        """
+
+        :param loc_i:
+        :param loc_j:
+        :param lineWidth:
+        :param fill:
+        """
         sideLength = self.squareSize
         y1 = loc_i*sideLength + lineWidth
         x1 = loc_j*sideLength + lineWidth
@@ -200,16 +312,23 @@ class GameView:
         self.canvas.create_rectangle(x1, y1, x2, y2, width=lineWidth, fill=fill)
 
     def DrawGamegameState(self, gameState):
+        """
+
+        :param gameState:
+        """
         self.canvas.delete("all")
         for i in range(len(gameState)):
             for j in range(len(gameState)):
                 pix = gameState[i][j]
-                if(pix == 1):
+                if pix == 1:
                     self.DrawSquare(i, j, fill=self.snakeBodyColor)
-                elif(pix == 2):
+                elif pix == 2:
                     self.DrawSquare(i, j, fill=self.fruitColor)
 
 class GameController:
+    """
+
+    """
     def __init__(self, tk):
         self.tk = tk
         self.isCommandLoaded = False
@@ -218,17 +337,31 @@ class GameController:
         self.tk.bind('<Key>', self.SetInput)
 
     def SetInput(self, event):
+        """
+
+        :param event:
+        """
         inputKey = event.keysym
-        if(self.key == self.noInput):
+        if self.key == self.noInput:
             self.key = inputKey
 
     def GetInput(self):
+        """
+
+        :return:
+        """
         return self.key
 
     def ClearInput(self):
+        """
+
+        """
         self.key = self.noInput
 
 def main():
+    """
+
+    """
     game = Game()
     game.Run()
 
