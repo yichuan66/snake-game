@@ -1,3 +1,9 @@
+# coding=utf-8
+
+"""
+Description: A snake game
+"""
+
 from collections import deque
 from random import randint
 import sys
@@ -5,7 +11,7 @@ from tkinter import *
 
 class Game:
     """
-    The game class that controls and monitors the progress of the game
+    The game class that controls and monitor
     """
     def __init__(self, board_dimension=15, init_snake_length=1, delay=50):
         self.tk = Tk()
@@ -129,7 +135,7 @@ class GameModel:
         """
         Return whether the snake bites itself
 
-        :return: whether the snake bitrs itself
+        :return: whether the snake bites itself
         """
         return self.snake.is_bite_self()
 
