@@ -240,7 +240,6 @@ class Snake:
             loc = tuple((i, 0))
             self.body_queue.appendleft(loc)
             self.body_table.add(loc)
-        print(len(self.body_queue))
 
     def set_new_direction(self, input_direction):
         """
