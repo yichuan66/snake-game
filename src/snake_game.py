@@ -34,7 +34,7 @@ class Game:
         """
         self.tk.after(self.delay, self.update_frame)
 
-        self.model.update_game_state(dir_input=self.controller.get_input())
+        self.model.update_game_state(dir_input=self.controller.get_input_direction())
 
         if self.model.is_snake_bite_self():
             self.terminate_game()
@@ -226,11 +226,9 @@ class Snake:
     def __init__(self, init_body_length=1, board_dimension=15):
         self.init_body_length = init_body_length
         self.board_dimension = board_dimension
-        self.move_direction = "Down"
-        self.direction_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
+        self.move_direction = (1, 0)
         self.body_queue = deque()
-        self.body_table = set()
-        self.bite_self = False
+        self.body_table = dict()
 
         self.initialize_body()
 
@@ -241,18 +239,16 @@ class Snake:
         for i in range(0, self.init_body_length):
             loc = tuple((i, 0))
             self.body_queue.appendleft(loc)
-            self.body_table.add(loc)
+            self.body_table[loc] = 1
 
     def set_move_direction(self, input_direction):
         """
         Set new direction of motion.
 
-        :param input_direction: New direction
+        :param input_direction: New direction (0, 1), (0, -1), (1, 0), (-1, 0)
         :return: Do nothing if the new direction is the exact opposite of current direction
         """
-        if input_direction not in self.direction_to_tuple:
-            return
-        if  self.is_opposite_direction(self.direction_to_tuple[input_direction], self.get_current_direction()):
+        if  self.is_opposite_direction(input_direction, self.get_current_direction()):
             if self.get_body_length() != 1:
                 return
         self.move_direction = input_direction
@@ -316,8 +312,8 @@ class Snake:
         :return: Snake's next head location if following current direction.
         """
         head = self.body_queue[0]
-        return ((head[0] + self.direction_to_tuple[self.direction][0]) % self.board_dimension,
-                (head[1] + self.direction_to_tuple[self.direction][1]) % self.board_dimension)
+        return ((head[0] + self.move_direction[0]) % self.board_dimension,
+                (head[1] + self.move_direction[1]) % self.board_dimension)
 
     def move(self, hit_fruit):
         """
@@ -331,11 +327,11 @@ class Snake:
             tail = self.body_queue.pop()
             self.body_table.remove(tail)
 
-        if next_step in self.body_table:
-            self.bite_self = True
-
         self.body_queue.appendleft(next_step)
-        self.body_table.add(next_step)
+        if(next_step in self.body_table):
+            self.body_table[next_step] += 1
+        else:
+            self.body_table[next_step] = 1
 
     def is_bite_self(self):
         """
@@ -343,7 +339,7 @@ class Snake:
 
         :return: Whether the snake bites itself.
         """
-        return self.bite_self
+        return max(self.body_table.values()) > 1
 
     def get_body_length(self):
         """
@@ -418,6 +414,7 @@ class GameController:
         self.key = 'Down'
         self.no_input = 'None'
         self.tk.bind('<Key>', self.set_input)
+        self.key_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
 
     def set_input(self, event):
         """
@@ -429,13 +426,13 @@ class GameController:
         if self.key == self.no_input:
             self.key = input_key
 
-    def get_input(self):
+    def get_input_direction(self):
         """
         Return the first different user input in current after input clear up
 
         :return: The first different user input in current after input clear up
         """
-        return self.key
+        return self.key_to_tuple[self.key]
 
     def clear_input(self):
         """
