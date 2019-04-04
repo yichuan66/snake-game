@@ -1,6 +1,7 @@
 from unittest import TestCase
 from snake_game import *
 
+
 class TestGame(TestCase):
     def test_run(self):
         # arrange
@@ -158,6 +159,7 @@ class TestBoard(TestCase):
         # assert
         self.fail()
 
+
 class TestSnake(TestCase):
 
     def test_initialize_body(self):
@@ -217,22 +219,52 @@ class TestSnake(TestCase):
         snake.set_new_direction('Up')
         self.assertEqual(snake.direction, 'Down')
 
-    def test_get_direction(self):
+    def test_get_current_direction(self):
         # arrange
         snake = Snake(init_body_length=5, board_dimension=15)
 
         # act and assert
-        snake.set_new_direction('Left')
-        self.assertEqual(snake.get_direction(), 'Left')
+        self.fail()
 
-        snake.set_new_direction('Up')
-        self.assertEqual(snake.get_direction(), 'Up')
+    def test_get_head_neck_diff(self):
+        # arrange
+        board_dimension = 3
+        snake = Snake(board_dimension=board_dimension)
 
-        snake.set_new_direction('Right')
-        self.assertEqual(snake.get_direction(), 'Right')
+        # act and assert
+        """        
+        the head and neck location here are generated, not real head 
+        and neck of the snake because we are just testing head/neck
+        difference, there is no need to move the whole snake        
+        """
 
-        snake.set_new_direction('Down')
-        self.assertEqual(snake.get_direction(), 'Down')
+        # cross-board-edge case
+        head = (1, 0)
+        neck = (1, 2)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, 1))
+        head = (1, 2)
+        neck = (1, 0)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, -1))
+        head = (0, 1)
+        neck = (2, 1)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (1, 0))
+        head = (2, 1)
+        neck = (0, 1)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (-1, 0))
+
+        # not-cross-board-edge case
+        head = (1, 1)
+        neck = (0, 1)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (1, 0))
+        head = (1, 1)
+        neck = (1, 2)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, -1))
+        head = (1, 1)
+        neck = (2, 1)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (-1, 0))
+        head = (1, 1)
+        neck = (1, 0)
+        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, 1))
 
     def test_head_location(self):
         # arrange
@@ -253,19 +285,19 @@ class TestSnake(TestCase):
         # act and assert
         snake.set_new_direction('Left')
         self.assertEqual(snake.get_direction(), 'Left')
-        self.assertEqual(snake.next_step(), (head_location[0], (head_location[1] - 1)%board_dimension) )
+        self.assertEqual(snake.next_step(), (head_location[0], (head_location[1] - 1) % board_dimension))
 
         snake.set_new_direction('Up')
         self.assertEqual(snake.get_direction(), 'Up')
-        self.assertEqual(snake.next_step(), ((head_location[0] - 1)%board_dimension, head_location[1]) )
+        self.assertEqual(snake.next_step(), ((head_location[0] - 1) % board_dimension, head_location[1]))
 
         snake.set_new_direction('Right')
         self.assertEqual(snake.get_direction(), 'Right')
-        self.assertEqual(snake.next_step(), (head_location[0], (head_location[1] + 1)%board_dimension) )
+        self.assertEqual(snake.next_step(), (head_location[0], (head_location[1] + 1) % board_dimension))
 
         snake.set_new_direction('Down')
         self.assertEqual(snake.get_direction(), 'Down')
-        self.assertEqual(snake.next_step(), ((head_location[0] + 1)%board_dimension, head_location[1]) )
+        self.assertEqual(snake.next_step(), ((head_location[0] + 1) % board_dimension, head_location[1]))
 
     def test_move(self):
         # arrange
@@ -315,6 +347,7 @@ class TestGameView(TestCase):
         # assert
         self.fail()
 
+
 class TestGameController(TestCase):
     def test_set_input(self):
         # arrange
@@ -339,3 +372,5 @@ class TestGameController(TestCase):
 
         # assert
         self.fail()
+
+

@@ -72,7 +72,7 @@ class GameModel:
 
         :param dir_input: the user specified input (a direction)
         """
-        self.snake.set_new_direction(dir_input)
+        self.snake.set_move_direction(dir_input)
         hit_fruit = (self.snake.next_step() == self.board.get_fruit_location())
         self.snake.move(hit_fruit=hit_fruit)
 
@@ -219,13 +219,15 @@ class Board:
 class Snake:
     """
     The snake class that describes the body length, location and movement of a snake on 2D board
+    The snake only accepts board that has >=3 side lengths
+    The snake only accepts body length larger than 0
     """
 
-    def __init__(self, init_body_length, board_dimension):
+    def __init__(self, init_body_length=1, board_dimension=15):
         self.init_body_length = init_body_length
         self.board_dimension = board_dimension
-        self.direction = "Down"
-        self.direction_table = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
+        self.move_direction = "Down"
+        self.direction_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
         self.body_queue = deque()
         self.body_table = set()
         self.bite_self = False
@@ -241,27 +243,63 @@ class Snake:
             self.body_queue.appendleft(loc)
             self.body_table.add(loc)
 
-    def set_new_direction(self, input_direction):
+    def set_move_direction(self, input_direction):
         """
         Set new direction of motion.
 
         :param input_direction: New direction
         :return: Do nothing if the new direction is the exact opposite of current direction
         """
-        if input_direction not in self.direction_table:
+        if input_direction not in self.direction_to_tuple:
             return
-        if (self.direction_table[input_direction][0] + self.direction_table[self.direction][0],
-            self.direction_table[input_direction][1] + self.direction_table[self.direction][1]) == (0, 0):
-            return
-        self.direction = input_direction
+        if  self.is_opposite_direction(self.direction_to_tuple[input_direction], self.get_current_direction()):
+            if self.get_body_length() != 1:
+                return
+        self.move_direction = input_direction
 
-    def get_direction(self):
+    def is_opposite_direction(self, d1, d2):
         """
-        Return current motion direction
+        Determine if two direction are opposites of each other
+        :param d1: direction1
+        :param d2: direction2        
+        :return: True if the input directions are opposite
+        """
+        return d1[0] + d2[0] == 0 and d1[1] + d2[1] == 0
+
+    def get_current_direction(self):
+        """
+        Return current motion direction by calculating the position difference between head and neck
+        (board edge overflow taken into account)
+
+        Note: this method only works well when both board side lengths >=3
 
         :return: Current motion direction
         """
-        return self.direction
+        if len(self.body_queue) == 1:
+            return self.move_direction
+
+        head = self.body_queue[0]
+        neck = self.body_queue[1]
+
+        return self.get_head_neck_diff(head, neck)
+
+    def get_head_neck_diff(self, head, neck):
+        """
+        Return the head-neck location difference (board edge overflow taken into account)
+
+        :param head: head location
+        :param neck: neck location (the element following the head in queue)
+        :return: head-neck location difference
+        """
+        i_diff = head[0] - neck[0]
+        j_diff = head[1] - neck[1]
+
+        if i_diff > 1: i_diff -= self.board_dimension
+        if i_diff < -1: i_diff += self.board_dimension
+        if j_diff > 1: j_diff -= self.board_dimension
+        if j_diff < -1: j_diff += self.board_dimension
+
+        return i_diff, j_diff
 
     def head_location(self):
         """
@@ -278,8 +316,8 @@ class Snake:
         :return: Snake's next head location if following current direction.
         """
         head = self.body_queue[0]
-        return ((head[0] + self.direction_table[self.direction][0]) % self.board_dimension,
-                (head[1] + self.direction_table[self.direction][1]) % self.board_dimension)
+        return ((head[0] + self.direction_to_tuple[self.direction][0]) % self.board_dimension,
+                (head[1] + self.direction_to_tuple[self.direction][1]) % self.board_dimension)
 
     def move(self, hit_fruit):
         """
