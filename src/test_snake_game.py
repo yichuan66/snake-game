@@ -253,33 +253,19 @@ class TestSnake(TestCase):
         difference, there is no need to move the whole snake        
         """
 
-        # cross-board-edge case
-        head = (1, 0)
-        neck = (1, 2)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, 1))
-        head = (1, 2)
-        neck = (1, 0)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, -1))
-        head = (0, 1)
-        neck = (2, 1)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (1, 0))
-        head = (2, 1)
-        neck = (0, 1)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (-1, 0))
+        head_neck_list_cross_edge = [[(1, 0), (1, 2), (0, 1)],
+                                     [(1, 2), (1, 0), (0, -1)],
+                                     [(0, 1), (2, 1), (1, 0)],
+                                     [(2, 1), (0, 1), (-1, 0)]]
 
-        # not-cross-board-edge case
-        head = (1, 1)
-        neck = (0, 1)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (1, 0))
-        head = (1, 1)
-        neck = (1, 2)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, -1))
-        head = (1, 1)
-        neck = (2, 1)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (-1, 0))
-        head = (1, 1)
-        neck = (1, 0)
-        self.assertEqual(snake.get_head_neck_diff(head, neck), (0, 1))
+        head_neck_list_not_cross_edge = [[(1, 1), (0, 1), (1, 0)],
+                                     [(1, 1), (1, 2), (0, -1)],
+                                     [(1, 1), (2, 1), (-1, 0)],
+                                     [(1, 1), (1, 0), (0, 1)]]
+
+        for test_case_arrangement in [head_neck_list_cross_edge, head_neck_list_not_cross_edge]:
+            for [head, neck, direction] in test_case_arrangement:
+                self.assertEqual(snake.get_head_neck_diff(head, neck), direction)
 
     def test_head_location(self):
         # arrange
