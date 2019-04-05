@@ -1,5 +1,7 @@
 from unittest import TestCase
+from collections import deque
 from snake_game import *
+
 
 class TestGame(TestCase):
     def test_run(self):
@@ -8,7 +10,7 @@ class TestGame(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_update_frame(self):
         # arrange
@@ -16,7 +18,7 @@ class TestGame(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_draw_game_state(self):
         # arrange
@@ -24,7 +26,7 @@ class TestGame(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_terminate_game(self):
         # arrange
@@ -32,7 +34,7 @@ class TestGame(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
 
 class TestGameModel(TestCase):
@@ -42,7 +44,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_get_game_state(self):
         # arrange
@@ -50,7 +52,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_draw_board(self):
         # arrange
@@ -58,7 +60,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_draw_snake(self):
         # arrange
@@ -66,7 +68,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_draw_fruit(self):
         # arrange
@@ -74,7 +76,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_print_game_state(self):
         # arrange
@@ -82,7 +84,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_is_snake_bite_self(self):
         # arrange
@@ -90,7 +92,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_get_board_dimension(self):
         # arrange
@@ -98,7 +100,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_get_snake_length(self):
         # arrange
@@ -106,7 +108,7 @@ class TestGameModel(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
 
 class TestBoard(TestCase):
@@ -116,7 +118,7 @@ class TestBoard(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_has_fruit_on_spot(self):
         # arrange
@@ -124,7 +126,7 @@ class TestBoard(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_get_fruit_location(self):
         # arrange
@@ -132,7 +134,7 @@ class TestBoard(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_set_fruit_eaten(self):
         # arrange
@@ -140,7 +142,7 @@ class TestBoard(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_is_fruit_eaten(self):
         # arrange
@@ -148,7 +150,7 @@ class TestBoard(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_generate_new_fruit(self):
         # arrange
@@ -156,7 +158,7 @@ class TestBoard(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
 class TestSnake(TestCase):
 
@@ -181,15 +183,63 @@ class TestSnake(TestCase):
             self.assertTrue(snake.body_queue[init_body_length - i - 1] == loc)
 
     def test_set_move_direction(self):
+        """
+        length equal to one -- can set all 4 direction
+        """
         # arrange
-        pass
+        snake = Snake(init_body_length=1, board_dimension=3)
+        key_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1), 'None': (0, 0)}
+        clockwise_keys = ['Up', 'Right', 'Down', 'Left']
+        counter_clockwise_keys = ['Up', 'Left', 'Down', 'Right']
+        opposite_keys = ['Up', 'Down', 'Right', 'Left']
+        same_keys = ['Up', 'Up', 'Down', 'Down', 'Right', 'Right', 'Left', 'Left']
+        all_key_arrangements = [clockwise_keys, counter_clockwise_keys, opposite_keys, same_keys]
+
+        # act and assert
+        for key_arrangement in all_key_arrangements:
+            for key_input in key_arrangement:
+                direction = key_to_tuple[key_input]
+                snake.set_move_direction(direction)
+                self.assertEqual(snake.move_direction, direction)
+
+        """
+        length longer than one -- can only set 3 direction, not neck direction
+        """
+        # arrange
+        snake = Snake(init_body_length=1, board_dimension=3)
+        direction_list = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        neck_position_list = [(0, 1), (2, 1), (1, 0), (1, 2)]
+        head = (1, 1)
+
+        # act and assert
+        for neck in neck_position_list:
+            snake.body_queue = deque([head, neck])
+            snake.body_table = {head: 1, neck: 1}
+            snake.move_direction = (0, 0)
+
+            for direction in direction_list:
+                snake.set_move_direction(direction)
+                if snake.is_opposite_direction(direction, snake.get_current_direction()):
+                    self.assertNotEqual(direction, snake.move_direction)
+                else:
+                    self.assertEqual(direction, snake.move_direction)
 
     def test_get_current_direction(self):
         # arrange
-        snake = Snake(init_body_length=5, board_dimension=15)
+        snake = Snake(init_body_length=1, board_dimension=3)
+
+        # correct direction with corresponding neck position when head position is (1, 1)
+        direction_list = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        neck_position_list = [(0, 1), (2, 1), (1, 0), (1, 2)]
+        head = (1, 1)
 
         # act and assert
-        pass
+        for i in range(len(neck_position_list)):
+            neck = neck_position_list[i]
+            direction = direction_list[i]
+            snake.body_queue = deque([head, neck])
+            snake.body_table = {head: 1, neck: 1}
+            self.assertEqual(snake.get_current_direction(), direction)
 
     def test_get_head_neck_diff(self):
         # arrange
@@ -272,7 +322,7 @@ class TestSnake(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_is_bite_self(self):
         # arrange
@@ -302,7 +352,7 @@ class TestGameView(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_draw_game_state(self):
         # arrange
@@ -311,7 +361,7 @@ class TestGameView(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
 
 class TestGameController(TestCase):
@@ -321,7 +371,7 @@ class TestGameController(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_get_input(self):
         # arrange
@@ -329,7 +379,7 @@ class TestGameController(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
     def test_clear_input(self):
         # arrange
@@ -337,6 +387,6 @@ class TestGameController(TestCase):
         # act
 
         # assert
-        pass
+        self.fail()
 
 
