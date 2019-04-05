@@ -316,13 +316,53 @@ class TestSnake(TestCase):
         self.assertEqual(snake.next_step(), ((head_location[0] + 1) % board_dimension, head_location[1]))
 
     def test_move(self):
+        # test normal move
         # arrange
-        snake = Snake(init_body_length=5, board_dimension=15)
+        snake = Snake(init_body_length=1, board_dimension=3)
+        snake.body_queue = deque([(1, 1), (0, 1)])
+        snake.body_table = {(1, 1): 1, (0, 1): 1}
+        snake.move_direction = (1, 0)
 
-        # act
+         # act
+        snake.move(hit_fruit=False)
 
         # assert
-        self.fail()
+        self.assertEqual(snake.body_queue, deque([(2, 1), (1, 1)]))
+        self.assertEqual(snake.body_table, {(2, 1): 1, (1, 1): 1})
+        self.assertEqual(snake.get_body_length(), 2)
+        self.assertEqual(snake.is_bite_self(), False)
+
+        # test hit fruit move
+        # arrange
+        snake = Snake(init_body_length=1, board_dimension=3)
+        snake.body_queue = deque([(1, 1), (0, 1)])
+        snake.body_table = {(1, 1): 1, (0, 1): 1}
+        snake.move_direction = (1, 0)
+
+         # act
+        snake.move(hit_fruit=True)
+
+        # assert
+        self.assertEqual(snake.body_queue, deque([(2, 1), (1, 1), (0, 1)]))
+        self.assertEqual(snake.body_table, {(2, 1): 1, (1, 1): 1, (0, 1): 1})
+        self.assertEqual(snake.get_body_length(), 3)
+        self.assertEqual(snake.is_bite_self(), False)
+
+        # test bite self move
+        # arrange
+        snake = Snake(init_body_length=1, board_dimension=3)
+        snake.body_queue = deque([(1, 1), (0, 1), (0, 0), (1, 0), (2, 0)])
+        snake.body_table = {(1, 1): 1, (0, 1): 1, (0, 0): 1, (1, 0): 1, (2, 0): 1}
+        snake.move_direction = (0, -1)
+
+         # act
+        snake.move(hit_fruit=False)
+
+        # assert
+        self.assertEqual(snake.body_queue, deque([(1, 0), (1, 1), (0, 1), (0, 0), (1, 0)]))
+        self.assertEqual(snake.body_table, {(1, 1): 1, (0, 1): 1, (0, 0): 1, (1, 0): 2})
+        self.assertEqual(snake.get_body_length(), 5)
+        self.assertEqual(snake.is_bite_self(), True)
 
     def test_is_bite_self(self):
         # arrange
