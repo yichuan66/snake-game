@@ -72,7 +72,9 @@ class GameModel:
 
         :param dir_input: the user specified input (a direction)
         """
-        self.snake.set_move_direction(dir_input)
+
+        if(dir_input != (0, 0)):
+            self.snake.set_move_direction(dir_input)
         hit_fruit = (self.snake.next_step() == self.board.get_fruit_location())
         self.snake.move(hit_fruit=hit_fruit)
 
@@ -248,10 +250,11 @@ class Snake:
         :param input_direction: New direction (0, 1), (0, -1), (1, 0), (-1, 0)
         :return: Do nothing if the new direction is the exact opposite of current direction
         """
-        if  self.is_opposite_direction(input_direction, self.get_current_direction()):
-            if self.get_body_length() != 1:
-                return
-        self.move_direction = input_direction
+
+        if self.get_body_length() == 1 or  \
+                not self.is_opposite_direction(input_direction, self.get_current_direction()):
+            self.move_direction = input_direction
+
 
     def is_opposite_direction(self, d1, d2):
         """
@@ -325,7 +328,7 @@ class Snake:
 
         if not hit_fruit:
             tail = self.body_queue.pop()
-            self.body_table.remove(tail)
+            self.body_table.pop(tail)
 
         self.body_queue.appendleft(next_step)
         if(next_step in self.body_table):
@@ -414,7 +417,7 @@ class GameController:
         self.key = 'Down'
         self.no_input = 'None'
         self.tk.bind('<Key>', self.set_input)
-        self.key_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
+        self.key_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1), 'None': (0, 0)}
 
     def set_input(self, event):
         """
