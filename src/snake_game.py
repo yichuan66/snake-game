@@ -414,8 +414,8 @@ class GameController:
     def __init__(self, tk):
         self.tk = tk
         self.is_command_loaded = False
-        self.key = 'Down'
         self.no_input = 'None'
+        self.key = self.no_input
         self.tk.bind('<Key>', self.set_input)
         self.key_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1), 'None': (0, 0)}
 
@@ -435,7 +435,9 @@ class GameController:
 
         :return: The first different user input in current after input clear up
         """
-        return self.key_to_tuple[self.key]
+        if self.key in self.key_to_tuple:
+            return self.key_to_tuple[self.key]
+        return self.key_to_tuple[self.no_input]
 
     def clear_input(self):
         """
