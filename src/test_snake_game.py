@@ -273,7 +273,7 @@ class TestSnake(TestCase):
                 'expected_direction': expected_direction
             }
 
-        def test_logic(self, test_case_):
+        def test_logic(test, test_case_):
 
             # arrange
             snake = Snake(init_body_length=1, board_dimension=3)
@@ -284,7 +284,7 @@ class TestSnake(TestCase):
             direction = test_case_['expected_direction']
             snake.body_queue = deque([head, neck])
             snake.body_table = {head: 1, neck: 1}
-            self.assertEqual(snake.get_current_direction(), direction)
+            test.assertEqual(snake.get_current_direction(), direction)
 
         test_cases = [
             test_case('test get Up direction', (1, 1), (0, 1), (1, 0)),
@@ -341,30 +341,42 @@ class TestSnake(TestCase):
         # assert
         self.assertEqual(snake.head_location(), snake.body_queue[0])
 
-    def test_next_step(self):
-        # arrange
-        init_body_length = 1
-        board_dimension = 15
-        snake = Snake(init_body_length=init_body_length, board_dimension=board_dimension)
-        head_location = snake.head_location()
-        key_to_tuple = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
+    def test_next_step_length_equal_to_one(self):
 
-        # act and assert
-        snake.set_move_direction(key_to_tuple['Left'])
-        self.assertEqual(snake.move_direction, key_to_tuple['Left'])
-        self.assertEqual(snake.next_step(), (head_location[0], (head_location[1] - 1) % board_dimension))
+        def test_case(test_case_name, key_input, key_mapped_to_direction, expected_next_step, snake_instance):
+            return {
+                'test_case_name': test_case_name,
+                'key_input': key_input,
+                'key_mapped_to_direction': key_mapped_to_direction,
+                'expected_next_step': expected_next_step,
+                'snake_instance': snake_instance
+            }
 
-        snake.set_move_direction(key_to_tuple['Up'])
-        self.assertEqual(snake.move_direction, key_to_tuple['Up'])
-        self.assertEqual(snake.next_step(), ((head_location[0] - 1) % board_dimension, head_location[1]))
+        def test_logic(test, test_case_):
+            # arrange
+            snake = test_case_['snake_instance']
 
-        snake.set_move_direction(key_to_tuple['Right'])
-        self.assertEqual(snake.move_direction, key_to_tuple['Right'])
-        self.assertEqual(snake.next_step(), (head_location[0], (head_location[1] + 1) % board_dimension))
+            # act and assert
+            snake.set_move_direction(test_case_['key_mapped_to_direction'][test_case_['key_input']])
+            test.assertEqual(snake.next_step(), test_case_['expected_next_step'])
 
-        snake.set_move_direction(key_to_tuple['Down'])
-        self.assertEqual(snake.move_direction, key_to_tuple['Down'])
-        self.assertEqual(snake.next_step(), ((head_location[0] + 1) % board_dimension, head_location[1]))
+        # test cases
+        shared_key_mapped_to_direction = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
+        test_cases = [test_case('body length 1 at (0, 0); next step after setting to left',
+                                'Left', shared_key_mapped_to_direction, (0, 2), Snake(1, 3)),
+                      test_case('body length 1 at (0, 0); next step after setting to right',
+                                'Right', shared_key_mapped_to_direction, (0, 1), Snake(1, 3)),
+                      test_case('body length 1 at (0, 0); next step after setting to up',
+                                'Up', shared_key_mapped_to_direction, (2, 0), Snake(1, 3)),
+                      test_case('body length 1 at (0, 0); next step after setting to down',
+                                'Down', shared_key_mapped_to_direction,(1, 0) , Snake(1, 3))]
+
+        # run tests
+        for tc in test_cases:
+            test_logic(self, tc)
+
+    def test_next_step_length_more_than_one(self):
+        pass
 
     def test_move(self):
 
