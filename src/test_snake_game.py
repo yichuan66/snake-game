@@ -36,7 +36,6 @@ class TestGame(TestCase):
         # assert
         self.fail()
 
-
 class TestGameModel(TestCase):
     def test_update_game_state(self):
         # arrange
@@ -189,7 +188,6 @@ class TestBoard(TestCase):
                 board.generate_new_fruit(obstacles)
                 self.assertFalse(board.get_fruit_location() in obstacles)
                 self.assertNotEqual(board.get_fruit_location(), (-1, -1))
-
 
 class TestSnake(TestCase):
 
@@ -523,7 +521,6 @@ class TestSnake(TestCase):
         self.assertEqual(snake.get_body_length(), len(snake.body_queue))
         self.assertEqual(snake.get_body_length(), len(snake.body_table))
 
-
 class TestGameView(TestCase):
     def test_draw_square(self):
         # arrange
@@ -542,7 +539,6 @@ class TestGameView(TestCase):
 
         # assert
         self.fail()
-
 
 class TestGameController(TestCase):
     def test_set_input(self):
