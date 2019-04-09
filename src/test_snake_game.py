@@ -1,6 +1,7 @@
 from unittest import TestCase
 from collections import deque
 from snake_game import *
+from random import randint
 
 class TestGame(TestCase):
     def test_run(self):
@@ -165,12 +166,30 @@ class TestBoard(TestCase):
                 self.assertEqual(board.is_fruit_eaten(), True)
 
     def test_generate_new_fruit(self):
-        # arrange
+        """
+        Here I will randomly generate snake body
+        (which might not be like a snake body at
+        all) to test the robustness of the generation
+        """
+        def random_obstacle_genenration(max_obstacle_count, board_dimension):
+            obstacle_table = {}
+            obstacle_count = randint(1, max_obstacle_count)
+            for i in range(1, obstacle_count):
+                j = randint(0, board_dimension-1)
+                k = randint(0, board_dimension-1)
+                obstacle_table[(j, k)] = 1
+            return obstacle_table
 
-        # act
+        dimension = 50
+        board = Board(dimension=dimension)
 
-        # assert
-        self.fail()
+        for i in range(1, 100):
+            obstacles = random_obstacle_genenration(max_obstacle_count=500, board_dimension=dimension)
+            for j in range(1, 100):
+                board.generate_new_fruit(obstacles)
+                self.assertFalse(board.get_fruit_location() in obstacles)
+                self.assertNotEqual(board.get_fruit_location(), (-1, -1))
+
 
 class TestSnake(TestCase):
 
