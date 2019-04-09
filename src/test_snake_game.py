@@ -109,47 +109,60 @@ class TestGameModel(TestCase):
         # assert
         self.fail()
 
-
 class TestBoard(TestCase):
     def test_get_dimension(self):
-        # arrange
-
-        # act
-
-        # assert
-        self.fail()
+        for i in range(1, 10000):
+            board = Board(dimension=i)
+            self.assertEqual(board.get_dimension(), i)
+            self.assertEqual(board.get_dimension(), board.dimension)
 
     def test_has_fruit_on_spot(self):
         # arrange
+        dimension = 15
+        board = Board(dimension=dimension)
 
-        # act
-
-        # assert
-        self.fail()
+        for i in range(1, dimension):
+            for j in range(1, dimension):
+                board.fruit_location = (-1, -1)
+                self.assertEqual(board.has_fruit_on_spot((i, j)), False)
+                board.fruit_location = (i, j)
+                self.assertEqual(board.has_fruit_on_spot((i, j)), True)
 
     def test_get_fruit_location(self):
         # arrange
+        dimension = 15
+        board = Board(dimension=dimension)
 
-        # act
-
-        # assert
-        self.fail()
+        board.fruit_location = (-1, -1)
+        self.assertEqual(board.get_fruit_location(), (-1, -1))
+        for i in range(1, dimension):
+            for j in range(1, dimension):
+                board.fruit_location = (i, j)
+                self.assertEqual(board.get_fruit_location(), (i, j))
 
     def test_set_fruit_eaten(self):
         # arrange
+        dimension = 15
+        board = Board(dimension=dimension)
 
-        # act
-
-        # assert
-        self.fail()
+        for i in range(1, dimension):
+            for j in range(1, dimension):
+                board.fruit_location = (i, j)
+                self.assertEqual(board.get_fruit_location(), (i, j))
+                board.set_fruit_eaten()
+                self.assertEqual(board.get_fruit_location(), (-1, -1))
 
     def test_is_fruit_eaten(self):
         # arrange
+        dimension = 15
+        board = Board(dimension=dimension)
 
-        # act
-
-        # assert
-        self.fail()
+        for i in range(1, dimension):
+            for j in range(1, dimension):
+                board.fruit_location = (i, j)
+                self.assertEqual(board.is_fruit_eaten(), False)
+                board.set_fruit_eaten()
+                self.assertEqual(board.is_fruit_eaten(), True)
 
     def test_generate_new_fruit(self):
         # arrange
