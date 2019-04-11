@@ -450,7 +450,15 @@ def main():
     """
     Main function
     """
-    game = Game()
+
+    """
+    Set your own delay to adjust game speed. 
+    The delay is the time between game state
+    update; shorter delay means faster game. 
+    The delay is set in milliseconds, default
+    is 50.
+    """
+    game = Game(delay=50)
     game.run()
 
 
