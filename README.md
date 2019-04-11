@@ -21,3 +21,5 @@ Add exceptions if I have time and interest to do so.
 Get a better fruit generation algorithm. The current one doesn't work well when the
 snake fills a high portion of board space.
 
+Milestone 1 is done. I will leave the unfinished stuff for the next release.
+
