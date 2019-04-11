@@ -13,11 +13,11 @@ you are more than one cell long.
 Open by running "python snake_game.py" in cmd.
 
 TO-DO on next release:
-    Unit testing is currently 30% done. Finish unit testing. Unit testing is not finished in this release because
-    the model, view and controller are tricky to test and that I'm lazy.
+Unit testing is currently 30% done. Finish unit testing. Unit testing is not finished in this release because
+the model, view and controller are tricky to test and that I'm lazy.
 
-    Add exceptions if I have time interest to do so.
+Add exceptions if I have time and interest to do so.
 
-    Get a better fruit generation algorithm. The current one doesn't work well when the
-    snake fills a high portion of board space.
+Get a better fruit generation algorithm. The current one doesn't work well when the
+snake fills a high portion of board space.
 
